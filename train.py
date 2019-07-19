@@ -17,13 +17,21 @@ def train(args, net, optimizer, env, cuda):
         total_steps_plt = []
         ep_reward_plt = []
 
+    # stores: rewards, masks, actions, policies, values
     steps = []
+    
+    # sum of steps taken by workers
     total_steps = 0
+    
+    # episode rewards
     ep_rewards = [0.] * args.num_workers
     render_timer = 0
     plot_timer = 0
+    
     while total_steps < args.total_steps:
         for _ in range(args.rollout_steps):
+            
+            # observations
             obs = Variable(torch.from_numpy(obs.transpose((0, 3, 1, 2))).float() / 255.)
             if cuda: obs = obs.cuda()
 
