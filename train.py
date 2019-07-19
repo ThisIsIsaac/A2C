@@ -35,11 +35,15 @@ def train(args, net, optimizer, env, cuda):
             obs = Variable(torch.from_numpy(obs.transpose((0, 3, 1, 2))).float() / 255.)
             if cuda: obs = obs.cuda()
 
-            # network forward pass
-            policies, values = net(obs)
+            # network forward pass:
+            # Policies: a probability vector [1 x action_space_size]
+            # value: a single value of `obs` 
+            action_weights, value = net(obs)
 
-            probs = Fnn.softmax(policies)
-            actions = probs.multinomial().data
+            action_probs = Fnn.softmax(action_weights)
+            
+            # sample actions from 
+            action_probs = action_probs.multinomial().data
 
             # gather env data, reset done envs and update their obs
             obs, rewards, dones, _ = env.step(actions.cpu().numpy())
