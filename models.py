@@ -1,8 +1,6 @@
 import numpy as np
 import torch
 import torch.nn as nn
-from torch.autograd import Variable
-
 
 def ortho_weights(shape, scale=1.):
     """ PyTorch port of ortho_init from baselines.a2c.utils """
@@ -82,19 +80,19 @@ class AtariCNN(nn.Module):
         self.pi.weight.data = ortho_weights(self.pi.weight.size(), scale=.01)
         self.v.weight.data = ortho_weights(self.v.weight.size())
 
-    def forward(self, conv_in):
+    def forward(self, state):
         """ Module forward pass
 
         Args:
-            conv_in (Variable): convolutional input, shaped [N x 4 x 84 x 84]
+            state (Variable): convolutional input, shaped [N x 4 x 84 x 84]
 
         Returns:
             pi (Variable): action probability logits, shaped [N x self.num_actions]
             v (Variable): value predictions, shaped [N x 1]
         """
-        N = conv_in.size()[0]
+        N = state.size()[0]
 
-        conv_out = self.conv(conv_in).view(N, 64 * 7 * 7)
+        conv_out = self.conv(state).view(N, 64 * 7 * 7)
 
         fc_out = self.fc(conv_out)
 
